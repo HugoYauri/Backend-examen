@@ -21,3 +21,50 @@ GET http://localhost:3000/products
 GET http://localhost:3000/products?category=Galletas
 ###
 GET http://localhost:3000/products?minPrice=20&maxPrice=50
+
+###
+# Pregunta 3 - Registrar notas de Ana
+POST http://localhost:3000/courses/PW/grades
+Content-Type: application/json
+
+{
+    "studentCode": "20231234",
+    "studentName": "Ana Torres",
+    "practices": [12, 15, 9, 18],
+    "midterm": 14,
+    "final": 16
+}
+
+###
+# Pregunta 3 - Registrar notas de Luis
+POST http://localhost:3000/courses/PW/grades
+Content-Type: application/json
+
+{
+    "studentCode": "20235678",
+    "studentName": "Luis Pérez",
+    "practices": [8, 10, 11, 7],
+    "midterm": 9,
+    "final": 8
+}
+
+###
+# Pregunta 3 - Listar, filtrar, ordenar y paginar
+GET http://localhost:3000/courses/PW/grades?status=APROBADO&sort=desc&page=1&limit=5
+
+###
+# Pregunta 3 - Detalle de un alumno
+GET http://localhost:3000/courses/PW/grades/20231234
+
+###
+# Pregunta 3 - Estadísticas del curso
+GET http://localhost:3000/courses/PW/stats
+
+###
+# Pregunta 3 - Curso inexistente (debe responder 404)
+GET http://localhost:3000/courses/XX/grades
+
+###
+# Pregunta 3 - Query inválido (debe responder 400)
+GET http://localhost:3000/courses/PW/grades?status=PENDIENTE
+
