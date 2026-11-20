@@ -2,9 +2,12 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import {calculateBmi} from './services/tools.service.js';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from "./generated/prisma/index.js";
+import "dotenv/config"
 const PORT = 3000;
 
-const app = express();
+const app = express();  
 app.use(bodyParser.urlencoded({ 
     extended: true 
 }));
@@ -62,6 +65,79 @@ app.post("/tools/bmi", function(req,resp){
         category: category
     });
     
+});
+
+const adapter = new PrismaPg({
+    connectionString : process.env.DATABASE_URL
+})
+const prisma = new PrismaClient({adapter});
+
+// Pregunta 2
+// Pregunta 2
+app.get("/products", async function (req, resp) {
+    const { category, minPrice, maxPrice, inStock } = req.query;
+
+    const tieneMinPrice = minPrice !== undefined;
+    const tieneMaxPrice = maxPrice !== undefined;
+
+    const min = tieneMinPrice ? Number(minPrice) : undefined;
+    const max = tieneMaxPrice ? Number(maxPrice) : undefined;
+
+    if (
+        (tieneMinPrice && !Number.isFinite(min)) ||
+        (tieneMaxPrice && !Number.isFinite(max)) ||
+        (tieneMinPrice && tieneMaxPrice && min > max)
+    ) {
+        return resp.status(400).json({
+            message: "Formatos incorrectos de query parameter"
+        });
+    }
+
+    const where = {};
+
+    if (category !== undefined) {
+        where.category = {
+            equals: category,
+            mode: "insensitive"
+        };
+    }
+
+    if (tieneMinPrice || tieneMaxPrice) {
+        where.price = {};
+
+        if (tieneMinPrice) {
+            where.price.gte = min;
+        }
+
+        if (tieneMaxPrice) {
+            where.price.lte = max;
+        }
+    }
+
+    if (inStock === "true") {
+        where.stock = {
+            gt: 0
+        };
+    }
+
+    try {
+        const arrProductos = await prisma.producto.findMany({
+            where
+        });
+
+        const resultado = arrProductos.map((producto) => ({
+            ...producto,
+            price: Number(producto.price)
+        }));
+
+        return resp.status(200).json(resultado);
+    } catch (error) {
+        console.error(error);
+
+        return resp.status(500).json({
+            message: "Error al consultar los productos"
+        });
+    }
 });
 
 app.listen(PORT, () => {

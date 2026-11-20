@@ -12,3 +12,12 @@ Content-Type: application/json
     "weight": 70,  
     "height": 1.75
 }
+
+Pregunta 2 - A
+
+###
+GET http://localhost:3000/products
+###
+GET http://localhost:3000/products?category=Galletas
+###
+GET http://localhost:3000/products?minPrice=20&maxPrice=50
