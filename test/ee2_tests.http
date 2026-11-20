@@ -1,0 +1,14 @@
+GET http://localhost:3000/greetings/John
+
+### 
+GET http://localhost:3000/greetings/John?lang=pt
+
+###
+// content type porque tu endpoint recibe un json mediante req.body
+POST http://localhost:3000/tools/bmi
+Content-Type: application/json
+
+{
+    "weight": 70,  
+    "height": 1.75
+}
